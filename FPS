@@ -1,0 +1,29 @@
+#!/usr/bin/python
+#-*-coding:utf-8 -*-
+#SYN Port Scan multithread
+
+#from multiprocessing import Pool, TimeoutError
+#from functools import partial
+from threading import Thread
+import time
+from scapy.all import *
+
+#Inicia función de escaneo
+def fps(port):
+	conf.verb = 0
+	waiting = 1
+	syn = sr1(IP(dst=ipaddr)/TCP(dport=port,flags="S"), timeout=waiting)
+	try:
+		if syn[TCP].flags == 18:
+			print "Puerto abierto: ", port
+	except TypeError:
+		pass
+#Termina función de escaneo
+ipaddr = raw_input("Set IPaddr: \n")
+t1 = time.time()
+for port in range (1, 65535):
+	t = Thread(target=fps, args=(port,))
+	t.start()
+print "Terminó el escaneo"
+t2 = time.time()
+print t2-t1
